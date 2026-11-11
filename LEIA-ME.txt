@@ -1,0 +1,20 @@
+NEXUS LIVRE - v3 (funciona sem o PC)
+
+COMO ATUALIZAR (já está no GitHub Pages):
+1. No GitHub, abra seu repositório > Add file > Upload files.
+2. Arraste TODOS os arquivos desta pasta (sobrescreve os antigos) > Commit changes.
+3. Espere 1-2 min. No iPhone, feche o app e abra de novo (se não mudar, abra 2x).
+
+NOVO NA v3:
+- LEADS (botão na barra de baixo): acha lojas/negócios SEM SITE na cidade,
+  com telefone/WhatsApp. Mensagem de abordagem escrita pela IA, botão WhatsApp,
+  funil (novo > contatado > respondeu > proposta > fechado). Fechado com valor
+  entra sozinho no Dashboard. "Site demo" cria um site pronto para o lead.
+- CRIAR SITE (Mais > Criar site): site profissional com 3D animado no topo
+  (cristal, esfera, nó, partículas, ondas, cubo), ou VÍDEO de fundo (ex.: do
+  Google Flow, escolhido do celular), ou modelo 3D .glb. Baixa em .zip/.html.
+  Para publicar grátis: app.netlify.com/drop (arraste o arquivo).
+- Imagens: tenta o Gemini primeiro.
+
+LIMITES: a busca grátis usa o OpenStreetMap (em cidade pequena pode ter poucos
+cadastros). Com a chave do Google Places (Leads > Ajustes) fica bem mais completa.
