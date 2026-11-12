@@ -45,6 +45,8 @@
     ['abrir_mapa', 'Cria um botão que abre o mapa/rota para um lugar.', { local: { type: 'string' } }, ['local']],
     ['abrir_link', 'Cria um botão que abre um site ou link.', { url: { type: 'string' } }, ['url']],
     ['criar_imagem', 'Gera uma imagem a partir de uma descrição e mostra na conversa.', { descricao: { type: 'string' } }, ['descricao']],
+    ['abrir_tela', 'Abre uma tela do app: saude (treinos, dieta, água), holo (holograma 3D/VR), jogos (criar jogo), videos (vídeo viral), ligacao (conversa por voz), pesquisa (pesquisa profunda), notif (notificações), rotinas, leads, sites, dashboard.', { tela: { type: 'string', enum: ['saude', 'holo', 'jogos', 'videos', 'ligacao', 'pesquisa', 'notif', 'rotinas', 'leads', 'sites', 'dashboard', 'tarefas', 'clima'] } }, ['tela']],
+    ['meu_plano_saude', 'Diz as calorias, proteína, carboidrato, gordura e litros de água por dia do senhor e o treino de hoje (com base nos dados em Treinos e dieta).', {}, []],
     ['buscar_leads', 'Busca LEADS para o senhor vender sites: negócios de uma cidade que NÃO têm site, com telefone/WhatsApp. Salva no funil da tela Leads.', { ramo: { type: 'string', description: 'tipo de negócio; vazio = todos' }, cidade: { type: 'string' }, quantidade: { type: 'number' } }, ['cidade']],
     ['resumo_leads', 'Mostra o funil de leads (novos, contatados, propostas, fechados), conversão e quanto já vendeu em sites.', {}, []],
     ['atualizar_lead', 'Muda a etapa de um lead pelo nome (novo, contatado, respondeu, proposta, fechado, perdido) e o valor. Fechado com valor lança a venda no Dashboard.', { nome: { type: 'string' }, status: { type: 'string', enum: ['novo', 'contatado', 'respondeu', 'proposta', 'fechado', 'perdido'] }, valor: { type: 'number' } }, ['nome']],
@@ -79,6 +81,8 @@
       if (nome === 'preparar_ligacao') { var tel = String(a.numero || '').replace(/[^\d+]/g, ''); if (!tel) return 'Número inválido.'; ACOES.push({ rot: 'Ligar para ' + tel, url: 'tel:' + tel }); return 'Botão de ligação pronto.' }
       if (nome === 'abrir_mapa') { ACOES.push({ rot: 'Abrir mapa: ' + String(a.local || '').slice(0, 40), url: 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(String(a.local || '')) }); return 'Botão do mapa pronto.' }
       if (nome === 'abrir_link') { var lk = String(a.url || ''); if (!/^https?:\/\//i.test(lk)) lk = 'https://' + lk; ACOES.push({ rot: 'Abrir ' + lk.replace(/^https?:\/\//, '').slice(0, 40), url: lk }); return 'Botão do link pronto.' }
+      if (nome === 'abrir_tela') { var nomesT = { saude: 'Treinos e dieta', holo: 'Holograma', jogos: 'Criar jogo', videos: 'Vídeo viral', ligacao: 'Ligação', pesquisa: 'Pesquisa profunda', notif: 'Notificações' }; ACOES.push({ rot: 'Abrir ' + (nomesT[a.tela] || a.tela), tela: a.tela }); return 'Pronto, toque no botão para abrir.' }
+      if (nome === 'meu_plano_saude') { if (!window.calcSaude) return 'Abra Treinos e dieta primeiro.'; var ps = perfilSaude(), cs = calcSaude(ps), hj = montarTreinos(ps).filter(function (x) { return x.dia === new Date().getDay() })[0]; ACOES.push({ rot: 'Abrir Treinos e dieta', tela: 'saude' }); return 'Meta diária: ' + cs.kcal + ' kcal, proteína ' + cs.prot + ' g, carboidrato ' + cs.carb + ' g, gordura ' + cs.gord + ' g, água ' + cs.agua + ' litros. Treino de hoje: ' + (hj ? hj.nome + ' — ' + hj.itens.slice(0, 4).join('; ') : 'descanso') + '.' }
       if (nome === 'buscar_leads') {
         var rl = await NX.leads.buscar({ ramo: a.ramo, cidade: String(a.cidade || ''), limite: Number(a.quantidade) || 30 })
         var nv = rl.leads.filter(function (l) { return !l.salvo }); NX.leads.salvar(nv); ACOES.push({ rot: 'Abrir Leads', tela: 'leads' })
@@ -116,7 +120,7 @@
         }
       } catch (e) { ultimo = e }
     }
-    return 'Não consegui falar com a IA agora (' + String(ultimo && ultimo.message || ultimo).slice(0, 90) + '). Confira a internet e as chaves em Mais › Chaves de IA.'
+    var em = String(ultimo && ultimo.message || ultimo); return /chave|limite|servidor/.test(em) ? 'Não consegui responder: ' + em.slice(0, 220) : 'Não consegui falar com a IA agora (' + em.slice(0, 160) + '). Confira a internet e as chaves em Mais › Chaves de IA.'
   }
   NXL.conversar = conversar; NXL.lembrar = lembrar
 
@@ -175,19 +179,29 @@
     q = String(q || '').slice(0, 400); if (!q) return 'Diga o que pesquisar.'
     if (!NX.brain.chaves().groq) return 'Pesquisar na web precisa da chave do Groq (Mais › Chaves de IA).'
     try {
-      var j = await NX.brain.pedir('groq', [{ role: 'user', content: q + '\n\nResponda em português do Brasil, em até 4 frases, citando a fonte principal e a data quando houver.' }], { modelo: 'openai/gpt-oss-20b', tools: [{ type: 'browser_search' }], extra: { tool_choice: 'required', reasoning_effort: 'low', max_completion_tokens: 1500 } })
+      var j = await NX.brain.pedir('groq', [{ role: 'user', content: q + '\n\nResponda em português do Brasil, em até 4 frases, citando a fonte principal e a data quando houver.' }], { modelo: 'openai/gpt-oss-120b', tools: [{ type: 'browser_search' }], extra: { tool_choice: 'required', reasoning_effort: 'low', max_completion_tokens: 1500 } })
       return String((j.choices[0].message || {}).content || '').trim() || 'A pesquisa não retornou texto.'
     } catch (e) { return 'A pesquisa na web falhou agora (' + String(e.message || e).slice(0, 90) + ').' }
   }
   NXL.olhar = async function (dataUrl, pergunta) {
     var ch = NX.brain.chaves(), msgs = [{ role: 'user', content: [{ type: 'text', text: String(pergunta || 'Descreva a imagem e diga o que for útil.') + ' Responda em português do Brasil, de forma curta e prática.' }, { type: 'image_url', image_url: { url: dataUrl } }] }], ult = null
-    var ordem = []; if (ch.gemini) ordem.push(['gemini', undefined]); if (ch.groq) ordem.push(['groq', 'meta-llama/llama-4-scout-17b-16e-instruct'])
+    var ordem = []; if (ch.gemini) ordem.push(['gemini', undefined]); if (ch.groq) ordem.push(['groq', 'qwen/qwen3.8-27b'])
     if (!ordem.length) throw new Error('Cadastre uma chave de IA em Mais › Chaves de IA.')
     for (var i = 0; i < ordem.length; i++) { try { var j = await NX.brain.pedir(ordem[i][0], msgs, { modelo: ordem[i][1] }); var t = String((j.choices[0].message || {}).content || '').trim(); if (t) return t } catch (e) { ult = e } }
     throw ult || new Error('Sem resposta.')
   }
 
   // ---------- voz ----------
+  NXL.pesquisar = pesquisar
+  NXL.transcrever = async function (blob) {
+    var k = NX.brain.chaves().groq; if (!k) throw new Error('Cadastre a chave do Groq.')
+    var ext = /mp4|aac/.test(blob.type) ? 'm4a' : /ogg/.test(blob.type) ? 'ogg' : 'webm', fd = new FormData()
+    fd.append('file', blob, 'audio.' + ext); fd.append('model', 'whisper-large-v3-turbo'); fd.append('language', 'pt'); fd.append('response_format', 'json')
+    var r = await orig('https://api.groq.com/openai/v1/audio/transcriptions', { method: 'POST', headers: { Authorization: 'Bearer ' + k }, body: fd })
+    if (!r.ok) throw new Error('não entendi o áudio (' + r.status + ')')
+    var t = String((await r.json()).text || '').trim()
+    return /^(obrigad[oa]( por assistir)?\.?|legendas? pela comunidade.*|tchau\.?)$/i.test(t) ? '' : t // o Whisper "inventa" isso em silêncio
+  }
   async function ouvir(blob) {
     var k = NX.brain.chaves().groq; if (!k) return { erro: 'Para falar comigo, cadastre a chave do Groq em Mais › Chaves de IA.' }
     var ext = /mp4|aac/.test(blob.type) ? 'm4a' : /ogg/.test(blob.type) ? 'ogg' : 'webm', fd = new FormData()
@@ -227,10 +241,12 @@
     var desc = String(o.texto || '').slice(0, 1500), spec
     try { spec = NX.sitegen.normalizar(NX.sitegen.jsonSeguro(await NX.brain.gerarTexto(NX.sitegen.PEDIDO_SPEC, desc, ['gemini', 'groq'])), desc) } catch (e) { spec = NX.sitegen.especBasica(desc) }
     if (o.marca) spec.marca = o.marca
-    if (o.forma3d) spec.hero.forma3d = o.forma3d
+    if (o.forma3d) { spec.hero.forma3d = o.forma3d; spec.hero.tipo = '3d' }
     if (o.video) spec.hero.video = o.video
     if (o.modelo) spec.hero.modelo = o.modelo
     spec.contato = Object.assign({}, spec.contato || {}, o.whatsapp ? { whatsapp: o.whatsapp } : {}, o.endereco ? { endereco: o.endereco } : {}, o.instagram ? { instagram: o.instagram } : {})
+    var fotos = {}; try { fotos = await NX.sitegen.buscarFotos(spec, { pexels: NX.leads.cfg().pexels }) } catch (e) {}
+    spec.imagens = fotos
     var item = { id: Date.now(), nome: spec.marca, data: new Date().toISOString(), spec: spec }
     var l = G('sites.json', []); l.unshift(item); S('sites.json', l.slice(0, 12))
     return { id: item.id, nome: spec.marca, spec: spec, html: NX.sitegen.montarSite(spec) }
