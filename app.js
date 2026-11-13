@@ -348,7 +348,7 @@ function ttsGemini(t){var k=NX.brain.chaves().gemini;if(!k)return Promise.resolv
 return fetch('https://generativelanguage.googleapis.com/v1beta/interactions',{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':k},body:JSON.stringify({model:'gemini-3.8-flash-tts',input:[{type:'user_input',content:[{type:'text',text:t}]}],response_format:{type:'audio'},generation_config:{speech_config:[{voice:voz}]}})}).then(function(r){if(!r.ok)throw new Error('Gemini '+r.status);return r.json()}).then(function(j){var a=null;(j.steps||[]).forEach(function(s){if(s.type==='model_output')(s.content||[]).forEach(function(c){if(c.type==='audio')a=c.data})});if(!a)throw new Error('sem áudio');return wavBlob(a)})}
 function tocarBlob(b,t){AU.onended=fimFala;AU.onerror=function(){if(t)vozCel(t);else fimFala()};AU.src=URL.createObjectURL(b);var p=AU.play();if(p&&p.catch)p.catch(function(){PEND=b;FALANDO=false;aviso('Toque na tela para ouvir a resposta.')})}
 function vozCel(t){if(!window.speechSynthesis){fimFala();return}try{speechSynthesis.cancel()}catch(e){}var u=new SpeechSynthesisUtterance(t);u.lang='pt-BR';var vs=speechSynthesis.getVoices(),v=vs.filter(function(x){return x.lang.replace('_','-').toLowerCase().indexOf('pt-br')===0});if(!v.length)v=vs.filter(function(x){return x.lang.toLowerCase().indexOf('pt')===0});if(v.length)u.voice=v[0];u.onend=fimFala;u.onerror=function(){fimFala();aviso('O celular não conseguiu falar. Veja o volume e o modo silencioso.')};setTimeout(function(){speechSynthesis.speak(u);if(speechSynthesis.paused)speechSynthesis.resume()},60)}
-function falar(t){t=String(t||'').replace(/[*_#`>]/g,'').slice(0,900);if(!t.trim())return;FALANDO=true;pausarEscuta();var modo=G('vozmodo.json',{}).modo||'auto';
+function falar(t){t=paraVozL(t);if(!t.trim())return;FALANDO=true;pausarEscuta();var modo=G('vozmodo.json',{}).modo||'auto';
 var p=modo==='celular'?Promise.resolve(null):fetch('/api/voz',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({texto:t})}).then(function(r){if(r.status===200){ULTVOZ='ElevenLabs';return r.blob()}var er=r.headers.get('X-Nexus-Erro');if(er&&!AVISO_EL){AVISO_EL=true;aviso('ElevenLabs: '+decodeURIComponent(er))}return null});
 p.then(function(b){if(b||modo==='celular')return b;return ttsGemini(t).then(function(x){if(x)ULTVOZ='Gemini';return x}).catch(function(e){aviso('Voz do Gemini falhou ('+String(e.message||e).slice(0,40)+'). Usando a do celular.');return null})}).then(function(b){if(b)tocarBlob(b,t);else{ULTVOZ='voz do celular';vozCel(t)}}).catch(function(){vozCel(t)})}
 function cartaoVoz(){var w=vidro('VOZ DO NEXUS','V');w.appendChild(el('p','','Escolha como ele fala. Automático usa a voz mais natural disponível (ElevenLabs, depois Gemini, depois a do celular).'));
@@ -415,6 +415,13 @@ Object.assign(IC, {
   pesquisa: 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14z M21 21l-5-5 M8 11h6 M11 8v6',
   notif: 'M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9 M10 21a2 2 0 0 0 4 0'
 })
+// a fala lê só o essencial: sem a linha de departamentos, sem a seção de aprendizado, sem tabelas/markdown
+function paraVozL(t) {
+  var s = String(t || '').replace(/^\s*\[Departamento[^\]]*\]\s*/i, '').split(/🎓|O que você aprendeu aqui/i)[0]
+  s = s.split('\n').filter(function (l) { return !/^\s*\|/.test(l) }).join('\n').replace(/[#*_`>]+/g, '').replace(/\n{2,}/g, '. ').replace(/\n/g, ' ').replace(/\s{2,}/g, ' ').trim()
+  if (s.length > 650) { var c = s.slice(0, 650); s = c.slice(0, Math.max(c.lastIndexOf('. '), 300) + 1) + ' O resto está na tela.' }
+  return s
+}
 function lerL(k, d) { return NXL.G(k, d) } function gravarL(k, v) { NXL.S(k, v) }
 var THREE_URL = 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js', TRES = null
 function carregarThree() { if (!TRES) TRES = import(THREE_URL).catch(function (e) { TRES = null; throw e }); return TRES }
