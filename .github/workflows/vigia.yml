@@ -1,0 +1,28 @@
+name: Vigia de precos do Nexus
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: vigia
+jobs:
+  vigiar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Conferir precos
+        env:
+          TP_TOKEN: ${{ secrets.TP_TOKEN }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: node vigia.mjs
+      - name: Salvar resultado
+        run: |
+          git config user.name "nexus-vigia"
+          git config user.email "nexus-vigia@users.noreply.github.com"
+          git add vigias-estado.json
+          git diff --cached --quiet || (git commit -m "vigia: precos atualizados" && git push)
