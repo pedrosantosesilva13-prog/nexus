@@ -15,8 +15,8 @@ var NAV=[['inicio','Início'],['conversa','Conversa'],['leads','Leads'],['dashbo
 var N=document.getElementById('nav');NAV.forEach(function(n){var b=el('button');b.dataset.v=n[0];b.innerHTML=ic(n[0]);b.appendChild(el('span','',n[1]));b.onclick=function(){ir(n[0])};N.appendChild(b)});
 function cab(t,voltar){var h=el('h2','',t);if(voltar){var b=el('button','voltar','‹ Voltar');b.onclick=function(){ir('mais')};h.appendChild(b)}M.appendChild(h)}
 function vidro(t,cod){var v=el('div','vidro');var ti=el('div','tit',t);if(cod)ti.appendChild(el('em','',cod));v.appendChild(ti);return v}
-function ir(v){VER++;VISTA=v;clearInterval(timer);M.textContent='';window.scrollTo(0,0);var bs=N.querySelectorAll('button');for(var i=0;i<bs.length;i++)bs[i].className=(bs[i].dataset.v===v||(['saude','holo','jogos','videos','ligacao','pesquisa','notif','sites','rotinas','tarefas','olhar','voz','chaves','backup','sobre','ensinar','seguranca','memoria','emails','manchetes','clima','empresaedit','memoria','avisos','controle','mercado','tarefas','agenda','holograma','opinioes','seguranca'].indexOf(v)>=0&&bs[i].dataset.v==='mais'))?'on':'';
-var f={saude:saude,holo:holo,jogos:jogos,videos:videos,ligacao:ligacao,pesquisa:pesquisa,notif:notif,leads:leads,tarefas:tarefas,clima:clima,olhar:olhar,voz:voz,chaves:chaves,backup:backup,sobre:sobre,boasvindas:boasvindas,rotinas:rotinas,sites:sites,rotinas:rotinas,ensinar:ensinar,holograma:holograma,opinioes:opinioes,seguranca:seguranca,mercado:mercado,tarefas:tarefas,inicio:inicio,conversa:conversa,estudio:estudio,agenda:agenda,mais:mais,emails:emails,manchetes:manchetes,clima:clima,dashboard:dashboard,empresaedit:empresaedit,memoria:memoria,avisos:avisos,controle:controle}[v];if(f)f()}
+function ir(v){VER++;VISTA=v;clearInterval(timer);M.textContent='';window.scrollTo(0,0);var bs=N.querySelectorAll('button');for(var i=0;i<bs.length;i++)bs[i].className=(bs[i].dataset.v===v||(['saude','holo','jogos','videos','ligacao','pesquisa','notif','vigias','sites','rotinas','tarefas','olhar','voz','chaves','backup','sobre','ensinar','seguranca','memoria','emails','manchetes','clima','empresaedit','memoria','avisos','controle','mercado','tarefas','agenda','holograma','opinioes','seguranca'].indexOf(v)>=0&&bs[i].dataset.v==='mais'))?'on':'';
+var f={saude:saude,holo:holo,jogos:jogos,videos:videos,ligacao:ligacao,pesquisa:pesquisa,notif:notif,vigias:vigias,leads:leads,tarefas:tarefas,clima:clima,olhar:olhar,voz:voz,chaves:chaves,backup:backup,sobre:sobre,boasvindas:boasvindas,rotinas:rotinas,sites:sites,rotinas:rotinas,ensinar:ensinar,holograma:holograma,opinioes:opinioes,seguranca:seguranca,mercado:mercado,tarefas:tarefas,inicio:inicio,conversa:conversa,estudio:estudio,agenda:agenda,mais:mais,emails:emails,manchetes:manchetes,clima:clima,dashboard:dashboard,empresaedit:empresaedit,memoria:memoria,avisos:avisos,controle:controle}[v];if(f)f()}
 // ---------- início ----------
 function inicio(){var h=new Date().getHours();var sd=el('p','saudacao',(h<5?'Boa madrugada':h<12?'Bom dia':h<18?'Boa tarde':'Boa noite')+(DONO&&DONO.apelido?', '+DONO.apelido+'.':'.'));M.appendChild(sd);var o=el('div','orbe');o.id='orbe';o.innerHTML='<i></i><i></i><i></i><div class="esfera"></div>';M.appendChild(o);M.appendChild(el('div','estado','ONLINE'));M.appendChild(chatRapido());var box=el('div');M.appendChild(box);
 function desenha(){api('/api/info').then(function(d){INFO=d;box.textContent='';
@@ -413,6 +413,7 @@ Object.assign(IC, {
   videos: 'M4 5h12v14H4z M16 10l5-3v10l-5-3',
   ligacao: 'M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z',
   pesquisa: 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14z M21 21l-5-5 M8 11h6 M11 8v6',
+  vigias: 'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z',
   notif: 'M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9 M10 21a2 2 0 0 0 4 0'
 })
 // a fala lê só o essencial: sem a linha de departamentos, sem a seção de aprendizado, sem tabelas/markdown
@@ -437,7 +438,7 @@ function mais() {
   var grupos = [
     ['CRIAR', [['sites', 'Criar site'], ['jogos', 'Criar jogo'], ['videos', 'Vídeo viral'], ['holo', 'Holograma 3D / VR']]],
     ['SAÚDE', [['saude', 'Treinos e dieta'], ['rotinas', 'Rotinas'], ['notif', 'Notificações']]],
-    ['ASSISTENTE', [['ligacao', 'Ligação com o Nexus'], ['pesquisa', 'Pesquisa profunda'], ['olhar', 'Olhar (câmera)'], ['tarefas', 'Tarefas'], ['clima', 'Clima']]],
+    ['ASSISTENTE', [['vigias', 'Vigiar preços e comprar'], ['ligacao', 'Ligação com o Nexus'], ['pesquisa', 'Pesquisa profunda'], ['olhar', 'Olhar (câmera)'], ['tarefas', 'Tarefas'], ['clima', 'Clima']]],
     ['AJUSTES', [['voz', 'Voz'], ['chaves', 'Chaves de IA'], ['memoria', 'Memória'], ['ensinar', 'Ensinar'], ['sobre', 'Sobre mim'], ['seguranca', 'Segurança'], ['backup', 'Backup']]]
   ]
   grupos.forEach(function (gr) {
@@ -446,7 +447,7 @@ function mais() {
     M.appendChild(g)
   })
 }
-var TELAS_LAB = ['conversa', 'dashboard', 'leads', 'sites', 'saude', 'holo', 'jogos', 'videos', 'ligacao', 'pesquisa', 'rotinas', 'tarefas', 'clima', 'olhar', 'notif', 'mais']
+var TELAS_LAB = ['conversa', 'dashboard', 'leads', 'sites', 'saude', 'holo', 'jogos', 'videos', 'ligacao', 'pesquisa', 'vigias', 'rotinas', 'tarefas', 'clima', 'olhar', 'notif', 'mais']
 function destino() {
   var h = (location.hash || '').replace('#', '').split('?')[0]
   if (h === 'escuta') { setTimeout(function () { var c = document.getElementById('cbEscuta'); if (c && !c.checked) { c.checked = true; c.onchange() } }, 400); return 'conversa' }
@@ -1269,6 +1270,102 @@ function mostrarPesquisa(out) {
 // ---------- costura final: parar 3D/microfone ao trocar de tela ----------
 var _irOriginal = ir
 ir = function (n) { if (n !== 'holo') pararHolo(); if (n !== 'ligacao') pararLigacao(); return _irOriginal.apply(this, arguments) }
+
+// ================= VIGIAS DE PREÇO (passagens e produtos), 24 h na nuvem =================
+// Quem vigia é o GitHub Actions do repositório do Nexus (de hora em hora, com celular e PC desligados).
+// Este app só cadastra o que vigiar (arquivo vigias.json no repositório) e mostra o resultado.
+// COMPRA: o Nexus avisa e abre a página de compra; quem confere e paga é o senhor (nunca guardamos cartão).
+var GH_DONO = 'pedrosantosesilva13-prog', GH_REPO = 'nexus', VIG_TIPO = 'voo'
+function vigCfg() { return lerL('vigia-cfg.json', {}) }
+function gh(caminho, op) {
+  var t = vigCfg().gh; if (!t) return Promise.reject(new Error('Falta a chave do GitHub (passo 3).'))
+  op = op || {}; op.headers = Object.assign({ Authorization: 'Bearer ' + t, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' }, op.headers || {})
+  return fetch('https://api.github.com/repos/' + GH_DONO + '/' + GH_REPO + caminho, op).then(function (r) { if (r.status === 204) return {}; return r.json().then(function (j) { if (!r.ok) { var e = new Error((j && j.message) || ('GitHub ' + r.status)); e.status = r.status; throw e } return j }) })
+}
+function b64(s) { return btoa(unescape(encodeURIComponent(s))) } function deB64(s) { return decodeURIComponent(escape(atob(String(s).replace(/\n/g, '')))) }
+function lerArq(nome, padrao) { return gh('/contents/' + nome + '?ref=main').then(function (j) { return { sha: j.sha, dados: JSON.parse(deB64(j.content)) } }).catch(function (e) { if (e.status === 404) return { sha: null, dados: padrao }; throw e }) }
+function gravarArq(nome, dados, msg) { return lerArq(nome, null).then(function (a) { return gh('/contents/' + nome, { method: 'PUT', body: JSON.stringify({ message: msg, content: b64(JSON.stringify(dados, null, 1)), sha: a.sha || undefined, branch: 'main' }) }) }) }
+function checarAgora() { return gh('/actions/workflows/vigia.yml/dispatches', { method: 'POST', body: JSON.stringify({ ref: 'main' }) }) }
+function brlV(v) { return 'R$ ' + Number(v || 0).toLocaleString('pt-BR', { maximumFractionDigits: 0 }) }
+function haQuanto(iso) { if (!iso) return 'ainda não'; var m = Math.round((Date.now() - new Date(iso).getTime()) / 60000); return m < 60 ? 'há ' + m + ' min' : m < 1440 ? 'há ' + Math.round(m / 60) + ' h' : 'há ' + Math.round(m / 1440) + ' dia(s)' }
+function acharCidade(txt) {
+  txt = String(txt || '').trim(); if (/^[A-Za-z]{3}$/.test(txt)) return Promise.resolve({ code: txt.toUpperCase(), name: txt.toUpperCase() })
+  return fetch('https://autocomplete.travelpayouts.com/places2?locale=pt&types[]=city&types[]=airport&term=' + encodeURIComponent(txt)).then(function (r) { return r.json() }).then(function (l) { var c = (l || [])[0]; if (!c) throw new Error('Não achei a cidade "' + txt + '". Tente o código do aeroporto (ex.: RBR, GRU).'); return { code: c.city_code || c.code, name: c.name + (c.country_name && c.country_name !== 'Brasil' ? ', ' + c.country_name : '') } })
+}
+function vigias() {
+  cab('VIGIAS DE PREÇO', 1)
+  var c = vigCfg()
+  if (!c.gh) return vigiaConfigurar()
+  var lista = el('div'); M.appendChild(lista); lista.appendChild(el('p', 'vazio', 'Carregando…'))
+  var nova = vidro('NOVA VIGIA', '+')
+  var tp = el('div', 'chips'); [['voo', 'Passagem aérea'], ['produto', 'Produto de loja']].forEach(function (x) { var b = el('button', VIG_TIPO === x[0] ? 'on' : '', x[1]); b.onclick = function () { VIG_TIPO = x[0]; ir('vigias') }; tp.appendChild(b) }); nova.appendChild(tp)
+  var campos = {}
+  if (VIG_TIPO === 'voo') {
+    campos.or = campoL(nova, 'Saindo de', 'text', 'Rio Branco', 'cidade ou código (RBR)'); campos.de = campoL(nova, 'Indo para', 'text', '', 'ex.: São Paulo, Lisboa, Orlando')
+    campos.ida = campoL(nova, 'Ida (mês ou dia)', 'month', ''); campos.volta = campoL(nova, 'Volta (opcional: mês ou dia)', 'month', '')
+    campos.alvo = campoL(nova, 'Me avise quando custar até (R$)', 'number', '', 'ex.: 900')
+    var ld = el('label', 'lchk'); campos.dir = el('input'); campos.dir.type = 'checkbox'; ld.appendChild(campos.dir); ld.appendChild(document.createTextNode(' só voo direto')); nova.appendChild(ld)
+  } else {
+    campos.url = campoL(nova, 'Link do produto (página da loja)', 'url', '', 'https://…'); campos.nome = campoL(nova, 'Nome (para você reconhecer)', 'text', '', 'ex.: Fone Bluetooth X'); campos.alvo = campoL(nova, 'Me avise quando custar até (R$)', 'number', '')
+  }
+  var bt = botao('Começar a vigiar', 'larga'); nova.appendChild(bt); M.appendChild(nova)
+  var cfgb = el('div', 'lacoes'); cfgb.appendChild(botao('Checar agora', 'sec', function () { checarAgora().then(function () { aviso('Pedi uma checagem. Em 1 a 3 minutos o resultado aparece aqui.') }).catch(function (e) { aviso(e.message) }) })); cfgb.appendChild(botao('Configuração', 'sec', function () { vigiaConfigurar(true) })); M.appendChild(cfgb)
+  M.appendChild(el('p', 'dsub', 'A vigia roda no GitHub de hora em hora, mesmo com o celular e o computador desligados, e avisa pelo ntfy com o botão "Comprar". Os preços de passagem vêm da Aviasales (podem ter algumas horas de atraso): confirme no site antes de pagar. Quem paga é sempre você, no site.'))
+  function carregar() {
+    Promise.all([lerArq('vigias.json', []), lerArq('vigias-estado.json', {})]).then(function (r) {
+      var vs = r[0].dados || [], es = r[1].dados || {}; lista.textContent = ''
+      if (!vs.length) { lista.appendChild(el('p', 'vazio', 'Nenhuma vigia ainda. Cadastre abaixo.')); return }
+      vs.forEach(function (v) {
+        var e = es[v.id] || {}, u = e.ultimo, ok = u && v.alvo && u.preco <= v.alvo
+        var cd = vidro((v.tipo === 'voo' ? '✈ ' + (v.origemNome || v.origem) + ' → ' + (v.destinoNome || v.destino) : '🛒 ' + (v.nome || 'Produto')).toUpperCase(), ok ? '✓' : '')
+        cd.appendChild(el('div', 'vpreco' + (ok ? ' ok' : ''), u ? brlV(u.preco) : e.erro ? '—' : 'aguardando'))
+        cd.appendChild(el('p', 'dsub', (v.tipo === 'voo' ? 'Ida ' + v.ida + (v.volta ? ' · volta ' + v.volta : ' · só ida') + (v.direto ? ' · direto' : '') + ' · ' : '') + (v.alvo ? 'alvo ' + brlV(v.alvo) + ' · ' : '') + (e.melhor ? 'menor visto ' + brlV(e.melhor.preco) + ' · ' : '') + 'checado ' + haQuanto(e.verificado) + (v.pausado ? ' · PAUSADA' : '')))
+        if (u && u.desc) cd.appendChild(el('p', '', u.desc))
+        if (e.erro) cd.appendChild(el('p', 'dsub', 'Problema: ' + e.erro))
+        var g = el('div', 'lacoes')
+        if (u && u.link) g.appendChild(botao(ok ? 'Comprar' : 'Ver oferta', ok ? '' : 'sec', function () { if (confirm('Achei ' + brlV(u.preco) + '. Abrir a página de compra? Você confere e paga lá.')) window.open(u.link, '_blank') }))
+        g.appendChild(botao(v.pausado ? 'Retomar' : 'Pausar', 'sec', function () { v.pausado = !v.pausado; gravarArq('vigias.json', vs, 'vigia: ' + (v.pausado ? 'pausar' : 'retomar')).then(carregar).catch(function (x) { aviso(x.message) }) }))
+        g.appendChild(botao('Apagar', 'sec', function () { if (!confirm('Parar de vigiar isso?')) return; gravarArq('vigias.json', vs.filter(function (x) { return x.id !== v.id }), 'vigia: apagar').then(carregar).catch(function (x) { aviso(x.message) }) }))
+        cd.appendChild(g); lista.appendChild(cd)
+      })
+    }).catch(function (e) { lista.textContent = ''; lista.appendChild(el('p', 'vazio', 'Não consegui ler as vigias: ' + e.message)) })
+  }
+  carregar()
+  bt.onclick = function () {
+    var alvo = Number(campos.alvo.value) || 0
+    var p = VIG_TIPO === 'voo'
+      ? (campos.ida.value ? Promise.all([acharCidade(campos.or.value), acharCidade(campos.de.value)]).then(function (cs) { return { tipo: 'voo', origem: cs[0].code, origemNome: cs[0].name, destino: cs[1].code, destinoNome: cs[1].name, ida: campos.ida.value, volta: campos.volta.value || '', direto: campos.dir.checked, alvo: alvo } }) : Promise.reject(new Error('Escolha o mês (ou dia) da ida.')))
+      : (/^https:\/\//.test(campos.url.value.trim()) ? Promise.resolve({ tipo: 'produto', url: campos.url.value.trim(), nome: campos.nome.value.trim(), alvo: alvo }) : Promise.reject(new Error('Cole o link da página do produto (começa com https://).')))
+    bt.disabled = true; bt.textContent = 'Salvando…'
+    p.then(function (v) { v.id = 'v' + Date.now().toString(36); v.criado = new Date().toISOString(); return lerArq('vigias.json', []).then(function (a) { var l = (a.dados || []).concat([v]).slice(-30); return gravarArq('vigias.json', l, 'vigia: nova') }) })
+      .then(function () { return checarAgora().catch(function () {}) }).then(function () { aviso('Vigiando! A primeira checagem sai em poucos minutos; depois, de hora em hora.'); ir('vigias') })
+      .catch(function (e) { aviso(e.message); bt.disabled = false; bt.textContent = 'Começar a vigiar' })
+  }
+}
+function vigiaConfigurar(voltar) {
+  M.textContent = ''; cab('CONFIGURAR VIGIAS', 1); var c = vigCfg(), n = ntfyCfg()
+  if (!n.topico) { n.topico = ntfyNovoTopico(); gravarL('ntfy.json', n) }
+  var v = vidro('3 PASSOS (UMA VEZ SÓ)', '⚙')
+  var ol = el('ol', 'lpassos')
+  var li1 = el('li'); li1.innerHTML = 'Crie uma conta grátis em <b>travelpayouts.com</b>, abra <b>Perfil → Token da API</b> e copie o token. No GitHub, abra o botão "Segredos" abaixo, crie o segredo <b>TP_TOKEN</b> e cole o token.'; ol.appendChild(li1)
+  var li2 = el('li'); li2.innerHTML = 'Na mesma tela de segredos, crie <b>NTFY_TOPIC</b> com o canal abaixo (é o mesmo das Notificações, para os avisos chegarem no app ntfy do celular).'; ol.appendChild(li2)
+  var li3 = el('li'); li3.innerHTML = 'Crie uma chave do GitHub: botão "Criar chave" → <b>Only select repositories: nexus</b> → Permissões: <b>Contents: Read and write</b> e <b>Actions: Read and write</b> → Generate. Cole aqui embaixo.'; ol.appendChild(li3)
+  v.appendChild(ol)
+  v.appendChild(el('div', 'lcanal', n.topico))
+  var g = el('div', 'lacoes')
+  g.appendChild(botao('Copiar canal', 'sec', function () { try { navigator.clipboard.writeText(n.topico); aviso('Canal copiado.') } catch (e) {} }))
+  ;[['Travelpayouts', 'https://www.travelpayouts.com/'], ['Segredos', 'https://github.com/' + GH_DONO + '/' + GH_REPO + '/settings/secrets/actions/new'], ['Criar chave', 'https://github.com/settings/personal-access-tokens/new']].forEach(function (x) { var a = el('a', 'botao sec', x[0]); a.href = x[1]; a.target = '_blank'; a.rel = 'noopener'; g.appendChild(a) })
+  v.appendChild(g)
+  var tk = campoL(v, 'Chave do GitHub (fica só neste aparelho)', 'password', c.gh || '', 'github_pat_…')
+  v.appendChild(botao('Salvar e testar', 'larga', function () {
+    var t = tk.value.trim(); if (!t) return aviso('Cole a chave do GitHub.')
+    gravarL('vigia-cfg.json', { gh: t })
+    gh('').then(function (r) { aviso('Conectado ao repositório ' + r.full_name + '.'); ir('vigias') }).catch(function (e) { gravarL('vigia-cfg.json', { gh: '' }); aviso('A chave não funcionou: ' + e.message) })
+  }))
+  v.appendChild(el('p', 'dsub', 'Segurança: a chave só abre o repositório do Nexus. O que você vigia fica no arquivo vigias.json, que é público como o resto do repositório. Nunca coloque cartão ou senha em lugar nenhum do Nexus: a compra é sempre feita por você, no site.'))
+  M.appendChild(v)
+  if (voltar) M.appendChild(botao('Voltar', 'sec larga', function () { ir('vigias') }))
+}
 
 
 checarDono();fetch('/api/dono').then(function(r){return r.json()}).then(function(d){DONO=d;ir(destino())}).catch(function(){ir(destino())});
